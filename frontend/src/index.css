@@ -8,3 +8,7 @@
 input {
     color-scheme: dark;
 }
+:root {
+  --rdp-accent-color: indigo;
+  --rdp-background-color: gray;
+}

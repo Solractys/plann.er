@@ -37,7 +37,7 @@ export function InviteGuestModal({
 
                 <div className="h-px bg-zinc-800"></div>
 
-                <form onSubmit={addEmail} className="h-16 p-4 bg-black rounded-xl gap-3 flex justify-between items-center shadow-shape">
+                <form onSubmit={addEmail} className="h-16 p-4 bg-zinc-950 rounded-xl gap-3 flex justify-between items-center shadow-shape">
                     <div className="flex items-center text-left gap-2">
                         <AtSign className="size-5 text-zinc-400" />
                         <input
@@ -47,8 +47,8 @@ export function InviteGuestModal({
                             placeholder="Digite o e-mail do convidado" />
                     </div>
 
-                    <button className="bg-lime-300 py-2 px-5 text-zinc-950 font-medium flex items-center rounded-md gap-2 hover:bg-lime-400"
-                        type="submit">Convidar<Plus className="size-5 text-zinc-950" /></button>
+                    <button className="bg-blueisa py-2 px-5 text-zinc-50 font-medium flex items-center rounded-md gap-2 hover:bg-blue-700"
+                        type="submit">Convidar<Plus className="size-5 text-zinc-50" /></button>
                 </form>
             </div>
         </div>

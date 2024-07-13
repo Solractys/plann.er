@@ -40,7 +40,7 @@ export function TripDetails() {
                             </div>
 
                             <button
-                                className="bg-lime-300 justify-center w-full py-3 px-5 text-lime-950 font-medium flex items-center rounded-md gap-2 hover:bg-lime-400"
+                                className="bg-blueisa justify-center w-full py-3 px-5 text-lime-50 font-medium flex items-center rounded-md gap-2 hover:bg-blue-700"
                                 type="submit">Salvar atividade</button>
                         </form>
                     </div>
@@ -66,9 +66,9 @@ export function TripDetails() {
                 <div className="flex-1 space-y-6">
                     <div className="flex justify-between items-center">
                         <h1 className="text-zinc-50 font-bold text-3xl">Atividades</h1>
-                        <button onClick={OpenModalActiv} className="bg-lime-400 px-5 py-2 rounded-md flex items-center gap-2">
-                            <Plus className="text-lime-950" />
-                            <span className="text-lime-950">Cadastrar atividade</span>
+                        <button onClick={OpenModalActiv} className="bg-blueisa px-5 py-2 rounded-md flex items-center gap-2">
+                            <Plus className="text-lime-50" />
+                            <span className="text-lime-50">Cadastrar atividade</span>
                         </button>
                     </div>
 
@@ -89,14 +89,14 @@ export function TripDetails() {
                             </div>
                             <div className="bg-zinc-900 h-12 flex items-center px-4 rounded-lg shadow-shape">
                                 <div className="flex items-center gap-4">
-                                    <CircleCheck className="text-lime-400 size-5" />
+                                    <CircleCheck className="text-blueisa size-5" />
                                     <p className="text-lg text-zinc-400 font-light">Corrida de Kart</p>
                                 </div>
                                 <span className="ml-auto font-light text-zinc-400">8:00h</span>
                             </div>
                             <div className="bg-zinc-900 h-12 flex items-center px-4 rounded-lg shadow-shape">
                                 <div className="flex items-center gap-4">
-                                    <CircleCheck className="text-lime-400 size-5" />
+                                    <CircleCheck className="text-blueisa size-5" />
                                     <p className="text-lg text-zinc-400 font-light">Corrida de Kart</p>
                                 </div>
                                 <span className="ml-auto font-light text-zinc-400">8:00h</span>
@@ -145,7 +145,7 @@ export function TripDetails() {
                                     <span className="text-zinc-400 w-full truncate">jessica.white44@yahoo.com</span>
                                 </div>
                                 <div >
-                                    <CircleCheck className="text-lime-400 size-5 shrink-0" />
+                                    <CircleCheck className="text-blueisa size-5 shrink-0" />
                                 </div>
                             </div>
                             <div className=" flex justify-between items-center">

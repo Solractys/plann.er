@@ -2,11 +2,15 @@ import { Mail, User, X } from "lucide-react";
 import { FormEvent } from "react";
 interface ConfirmTripModalProps {
     CloseConfirmModal: () => void
+    setOwnerName: (name: string) => void
+    setEmailOwner: (email: string) => void
     createTrip: (event: FormEvent<HTMLFormElement>) => void
 }
 export function ConfirmTripModal({
     CloseConfirmModal,
-    createTrip
+    createTrip,
+    setEmailOwner,
+    setOwnerName
 }: ConfirmTripModalProps) {
     return (
         <div className="fixed bg-black/60 inset-0 flex items-center justify-center">
@@ -24,20 +28,22 @@ export function ConfirmTripModal({
                         <input
                             name="fullName"
                             type="text"
+                            onChange={(event) => setOwnerName(event.target.value)}
                             className="placeholder:text-zinc-400 w-full text-zinc-50 outline-none bg-transparent"
                             placeholder="Seu nome completo" />
                     </div>
                     <div className=" bg-zinc-950 h-16 p-4 shadow-shape flex text-left w-full rounded-md items-center gap-2">
                         <Mail className="size-5 text-zinc-400" />
                         <input
-                            name="fullName"
+                            name="email"
                             type="text"
+                            onChange={(event) => setEmailOwner(event.target.value)}
                             className="placeholder:text-zinc-400 w-full text-zinc-50 outline-none bg-transparent"
                             placeholder="Seu e-mail pessoal" />
                     </div>
 
-                    <button  
-                    className="bg-lime-300 justify-center w-full py-3 px-5 text-lime-950 font-medium flex items-center rounded-md gap-2 hover:bg-lime-400"
+                    <button
+                        className="bg-blueisa justify-center w-full py-3 px-5 text-blue-50 font-medium flex items-center rounded-md gap-2 hover:bg-blue-700"
                         type="submit">Comfirmar criação da viagem</button>
                 </form>
             </div>

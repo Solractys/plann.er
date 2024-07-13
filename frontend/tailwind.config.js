@@ -6,6 +6,12 @@ export default {
   ],
   theme: {
     extend: {
+      backgroundColor: {
+        blueisa: '#0000FF'
+      },
+      textColor: {
+        blueisa: '#0000FF'
+      },
       fontFamily: {
         sans: 'Inter',
       },

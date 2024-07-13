@@ -21,8 +21,8 @@ export function InviteGuestStep({
             </button>
 
             <button onClick={OpenConfirmModal}
-                className="bg-lime-300 py-2 px-5 text-zinc-950 font-medium flex items-center rounded-md gap-2 hover:bg-lime-400"
-                type="button">Confirmar Viagem<ArrowRight className="size-5 text-zinc-950" /></button>
+                className="bg-blueisa py-2 px-5 text-zinc-50 font-medium flex items-center rounded-md gap-2 hover:bg-blue-700"
+                type="button">Confirmar Viagem<ArrowRight className="size-5 text-zinc-50" /></button>
         </div>
 
     )
