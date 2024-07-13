@@ -6,19 +6,12 @@ import { ConfirmTripModal } from "./confirm-trip-modal";
 import { DestinationStep } from "./steps/destination-step";
 import { InviteGuestStep } from "./steps/invite-guest-step";
 import { DateRange } from "react-day-picker";
+import { api } from "../../lib/axios";
+import { X } from "lucide-react";
 
 export function CreateTrip() {
 
     const navigate = useNavigate();
-    function createTrip(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        navigate('/trips/666');
-        console.log(Destination);
-        console.log(OwnerName);
-        console.log(EmailOwner);
-        console.log(EventDate);
-        console.log(emails);
-    }
     const [isOpenGuest, setIsOpenGuest] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [emails, setEmails] = useState<string[]>([]);
@@ -28,7 +21,14 @@ export function CreateTrip() {
     const [OwnerName, setOwnerName] = useState('');
     const [EmailOwner, setEmailOwner] = useState('');
     const [EventDate, setEventDate] = useState<DateRange | undefined>();
-    
+
+    const [ModalError, setModalError] = useState(false);
+    function openModalError() {
+        setModalError(true);
+    }
+    function closeModalError() {
+        setModalError(false);
+    }
 
     function OpenConfirmModal() {
         setConfirmModal(true);
@@ -65,6 +65,33 @@ export function CreateTrip() {
     }
     function CloseGuestInvite() {
         setIsOpenGuest(false);
+    }
+    async function createTrip(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        if (!Destination) {
+            openModalError();
+            return
+        }
+        if (!OwnerName || !EmailOwner) {
+            openModalError();
+            return
+        }
+        if (!EventDate?.from || !EventDate.to) {
+            openModalError();
+            return
+        }
+        const response = await api.post('/trips', {
+            destination: Destination,
+            starts_at: EventDate?.from,
+            ends_at: EventDate?.to,
+            emails_to_invite:
+                emails
+            ,
+            owner_name: OwnerName,
+            owner_email: EmailOwner
+        })
+        const { tripId } = response.data;
+        return navigate(`/trips/${tripId}`);
     }
     return (
         <div className="h-screen flex justify-center items-center bg-pattern bg-no-repeat bg-center">
@@ -112,6 +139,17 @@ export function CreateTrip() {
                     setEmailOwner={setEmailOwner}
                     setOwnerName={setOwnerName}
                 />
+            )}
+            {ModalError && (
+                <div className="fixed bg-black/60 inset-0 flex items-center justify-center">
+                    <div className="w-[420px] border border-red-600 space-y-4 bg-zinc-900 py-5 px-6 rounded-md">
+                        <div className="flex justify-between items-center">
+                            <h1 className="text-2xl text-zinc-50">Erro ao tentar criar viagem</h1>
+                            <button className="" onClick={closeModalError}><X className="text-zinc-400" /></button>
+                        </div>
+                        <p className=" mb-4 text-zinc-400">Preencha os dados corretamente</p>
+                    </div>
+                </div>
             )}
         </div>
     )

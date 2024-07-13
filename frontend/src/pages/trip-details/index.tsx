@@ -1,9 +1,28 @@
 import { Calendar, CircleCheck, CircleDashed, Link2, MapPin, Plus, Settings2, Tag, UserCog, X } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useLocation, useParams } from "react-router-dom";
+import { api } from "../../lib/axios";
+import { format } from "date-fns";
+
+interface Trip {
+    id: string
+    destination: string
+    starts_at: string
+    ends_at: string
+    is_confirmed: boolean
+}
 
 export function TripDetails() {
+    const path = useLocation()
+    const [trip, setTrip] = useState<Trip | undefined>();
 
-    const [ isOpenModalActiv, setIsOpenModalActiv ] = useState(false);
+    useEffect(() => {
+     api.get(path.pathname).then(response => setTrip(response.data.trip));
+}, [])
+
+    const displayDate = trip? format(trip?.starts_at, "d' de 'LLL")
+    .concat(" até ").concat(format(trip?.ends_at, "d' de 'LLL")): null;
+    const [isOpenModalActiv, setIsOpenModalActiv] = useState(false);
     function OpenModalActiv() {
         setIsOpenModalActiv(true);
     }
@@ -21,7 +40,7 @@ export function TripDetails() {
                         </div>
                         <p className="text-sm mb-4 text-zinc-400">Todos convidados podem visualizar as atividades.</p>
 
-                        <form  className=" gap-3 flex flex-col w-full items-center">
+                        <form className=" gap-3 flex flex-col w-full items-center">
                             <div className=" bg-zinc-950 h-16 p-4 shadow-shape flex text-left w-full rounded-md items-center gap-2">
                                 <Tag className="size-5 text-zinc-400" />
                                 <input
@@ -50,12 +69,12 @@ export function TripDetails() {
             <div className="px-4 h-16 rounded-md bg-zinc-900 shadow-shape flex justify-between items-center">
                 <div className="flex items-center gap-2">
                     <MapPin className="size-5 text-zinc-400 " />
-                    <span className="text-zinc-100">Florianópolis, Brasil</span>
+                    <span className="text-zinc-100">{trip?.destination}</span>
                 </div>
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2 ">
                         <Calendar className="size-5 text-zinc-400" />
-                        <span>17 a 23 de Agosto</span>
+                        <span>{displayDate}</span>
                     </div>
                     <button className="bg-zinc-800 px-5 py-2 flex items-center gap-2 rounded-md shadow-shape">Alterar local/hora
                         <Settings2 className="text-zinc-400" /></button>
