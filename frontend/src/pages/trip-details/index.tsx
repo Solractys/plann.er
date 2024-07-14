@@ -1,5 +1,5 @@
-import { Calendar, CircleCheck, CircleDashed, Link2, MapPin, Plus, Settings2, Tag, UserCog, X } from "lucide-react"
-import { useEffect, useState } from "react"
+import { Calendar, CircleCheck, CircleDashed, Link2, Link2Icon, MapPin, Plus, Settings2, Tag, TagIcon, UserCog, X } from "lucide-react"
+import { FormEvent, useEffect, useState } from "react"
 import { useLocation } from "react-router-dom";
 import { api } from "../../lib/axios";
 import { format } from "date-fns";
@@ -17,16 +17,46 @@ interface Participant {
     email: string
     is_confirmed: boolean
 }
+interface Link {
+    id: string
+    title: string
+    url: string
+}
 
 export function TripDetails() {
     const path = useLocation()
     const [trip, setTrip] = useState<Trip | undefined>();
     const [participants, setParticipants] = useState<Participant[]>([])
+    const [links, setLinks] = useState<Link[]>([])
+    const [linkModal, setLinkModal] = useState(false)
+    const [linkName, setLinkName] = useState('')
+    const [linkUrl, setLinkUrl] = useState('');
+
+    function OpenLinkModal() {
+        setLinkModal(true)
+    }
+    function CloseLinkModal() {
+        setLinkModal(false)
+    }
 
     useEffect(() => {
         api.get(path.pathname).then(response => setTrip(response.data.trip));
         api.get(path.pathname + "/participants").then(response => setParticipants(response.data.participants));
-    }, [])
+        api.get(path.pathname + "/links").then(response => setLinks(response.data.links));
+    }, [path.pathname])
+    async function createLink(event: FormEvent<HTMLFormElement>){
+        event.preventDefault();
+        if(!linkUrl || !linkName){
+            return
+        }
+        const response = await api.post(path.pathname + "/links", {
+            title: linkName,
+            url: linkUrl
+        })
+        setLinks(response.data);
+        setLinkModal(false);
+        api.get(path.pathname + "/links").then(response => setLinks(response.data.links));
+    }
 
     const displayDate = trip ? format(trip?.starts_at, "d' de 'LLL")
         .concat(" até ").concat(format(trip?.ends_at, "d' de 'LLL")) : null;
@@ -137,26 +167,58 @@ export function TripDetails() {
                     <div className="space-y-4">
                         <h1 className="font-bold text-2xl">Links importantes</h1>
                         <div className="space-y-4">
-                            <div className=" flex justify-between items-center">
-                                <div className=" flex items-start flex-col">
-                                    <span className=" text-left text-zinc-100">Regras do AirBnB</span>
-                                    <span className="text-zinc-400 w-full truncate">https://www.airbnb.com.br/rooms/104700011123123123123123123123</span>
+                            {links.length > 0? links.map(link =>
+                                <div key={link.id} className=" flex justify-between items-center">
+                                    <div className=" flex items-start flex-col">
+                                        <span className=" text-left text-zinc-100">{link.title}</span>
+                                        <span className="text-zinc-400 w-full truncate">{link.url}</span>
+                                    </div>
+                                    <div>
+                                        <a href={link.url}><Link2 className="size-5 shrink-0" /></a>
+                                    </div>
                                 </div>
-                                <div>
-                                    <a href=""><Link2 className="size-5 shrink-0" /></a>
+                            ): 
+                            <span>Sem Links cadastrados</span>
+                            }
+                            {linkModal && (
+                                <div className="fixed bg-black/60 inset-0 flex items-center justify-center">
+                                    <div className="max-w-[560px] space-y-4 bg-zinc-900 py-5 px-6 rounded-md">
+                                        <div className="flex justify-between items-center">
+                                            <h1 className="text-2xl text-white">Cadastrar link</h1>
+                                            <button className="" onClick={CloseLinkModal}><X className="text-zinc-400" /></button>
+                                        </div>
+                                        <p className="text-sm mb-4 text-zinc-400">Adicione o título e a url do link que deseja compartilhar com os seus convidados</p>
+
+                                        <form onSubmit={createLink} className=" gap-3 flex flex-col w-full items-center">
+                                            <div className=" bg-zinc-900 h-16 p-4 shadow-shape flex text-left w-full rounded-md items-center gap-2">
+                                                <TagIcon className="size-5 text-zinc-400" />
+                                                <input
+                                                    name="linkName"
+                                                    type="text"
+                                                    onChange={(event) => setLinkName(event.target.value)}
+                                                    className="placeholder:text-zinc-400 w-full text-zinc-50 outline-none bg-transparent"
+                                                    placeholder="Titulo do Link" />
+                                            </div>
+                                            <div className=" bg-zinc-900 h-16 p-4 shadow-shape flex text-left w-full rounded-md items-center gap-2">
+                                                <Link2Icon className="size-5 text-zinc-400" />
+                                                <input
+                                                    name="url"
+                                                    type="text"
+                                                    onChange={(event) => setLinkUrl(event.target.value)}
+                                                    className="placeholder:text-zinc-400 w-full text-zinc-50 outline-none bg-transparent"
+                                                    placeholder="Url do link" />
+                                            </div>
+
+                                            <button
+                                                className="bg-blueisa justify-center w-full py-3 px-5 text-blue-50 font-medium flex items-center rounded-md gap-2 hover:bg-blue-700"
+                                                type="submit">Criar Link</button>
+                                        </form>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className=" flex justify-between items-center">
-                                <div className=" flex items-start flex-col">
-                                    <span className=" text-left text-zinc-100">Regras do AirBnB</span>
-                                    <span className="text-zinc-400 w-full truncate">https://www.airbnb.com.br/rooms/104700011123123123123123123123</span>
-                                </div>
-                                <div>
-                                    <a href=""><Link2 className="size-5 shrink-0" /></a>
-                                </div>
-                            </div>
+                            )}
+
                         </div>
-                        <button className="w-full h-11 bg-zinc-800 gap-2 shadow-shape rounded-md flex items-center justify-center text-zinc-100 px-5 py-2">
+                        <button onClick={OpenLinkModal} className="w-full h-11 bg-zinc-800 gap-2 shadow-shape rounded-md flex items-center justify-center text-zinc-100 px-5 py-2">
                             <Plus className="size-5 text-zinc-100" />
                             Cadastrar novo link</button>
                     </div>
