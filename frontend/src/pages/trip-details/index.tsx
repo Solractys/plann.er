@@ -3,6 +3,8 @@ import { FormEvent, useEffect, useState } from "react"
 import { useLocation } from "react-router-dom";
 import { api } from "../../lib/axios";
 import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
 
 interface Trip {
     id: string
@@ -22,15 +24,25 @@ interface Link {
     title: string
     url: string
 }
+interface Activity {
+    date: string
+    activities: [{
+        id: string
+        title: string
+        occurs_at: string
+    }]
+}
 
 export function TripDetails() {
     const path = useLocation()
-    const [trip, setTrip] = useState<Trip | undefined>();
-    const [participants, setParticipants] = useState<Participant[]>([])
-    const [links, setLinks] = useState<Link[]>([])
-    const [linkModal, setLinkModal] = useState(false)
-    const [linkName, setLinkName] = useState('')
     const [linkUrl, setLinkUrl] = useState('');
+    const [linkName, setLinkName] = useState('')
+    const [linkModal, setLinkModal] = useState(false)
+    const [trip, setTrip] = useState<Trip | undefined>();
+
+    const [links, setLinks] = useState<Link[]>([])
+    const [activities, setActivities] = useState<Activity[]>([]);
+    const [participants, setParticipants] = useState<Participant[]>([])
 
     function OpenLinkModal() {
         setLinkModal(true)
@@ -43,10 +55,11 @@ export function TripDetails() {
         api.get(path.pathname).then(response => setTrip(response.data.trip));
         api.get(path.pathname + "/participants").then(response => setParticipants(response.data.participants));
         api.get(path.pathname + "/links").then(response => setLinks(response.data.links));
+        api.get(path.pathname + "/activities").then(response => setActivities(response.data.activities));
     }, [path.pathname])
-    async function createLink(event: FormEvent<HTMLFormElement>){
+    async function createLink(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        if(!linkUrl || !linkName){
+        if (!linkUrl || !linkName) {
             return
         }
         const response = await api.post(path.pathname + "/links", {
@@ -57,9 +70,25 @@ export function TripDetails() {
         setLinkModal(false);
         api.get(path.pathname + "/links").then(response => setLinks(response.data.links));
     }
+    const [atcivityName, setActivityName] = useState('');
+    const [occursAt, setOccurtsAt] = useState<string>();
 
-    const displayDate = trip ? format(trip?.starts_at, "d' de 'LLL")
-        .concat(" até ").concat(format(trip?.ends_at, "d' de 'LLL")) : null;
+    async function createActivity(event: FormEvent<HTMLFormElement>){
+        event.preventDefault();
+        if(!atcivityName || !occursAt){
+            return;
+        }
+        await api.post(path.pathname + "/activities", {
+            occurs_at: occursAt,
+            title: atcivityName
+        })
+        api.get(path.pathname + "/activities").then(response => setActivities(response.data.activities));
+        setIsOpenModalActiv(false)
+
+    }
+
+    const displayDate = trip ? format(trip?.starts_at, "d' de 'LLL", { locale: ptBR })
+        .concat(" até ").concat(format(trip?.ends_at, "d' de 'LLL", { locale: ptBR })) : null;
 
     const [isOpenModalActiv, setIsOpenModalActiv] = useState(false);
     function OpenModalActiv() {
@@ -74,16 +103,17 @@ export function TripDetails() {
                 <div className="fixed  bg-black/60 inset-0 flex items-center justify-center">
                     <div className="max-w-[560px] w-full space-y-4 bg-zinc-900 py-5 px-6 rounded-md">
                         <div className="flex justify-between items-center">
-                            <h1 className="text-2xl text-white">Confirmar criação de viagem</h1>
+                            <h1 className="text-2xl text-white">Cadastro de atividade</h1>
                             <button className="" onClick={CloseModalActiv}><X className="text-zinc-400" /></button>
                         </div>
                         <p className="text-sm mb-4 text-zinc-400">Todos convidados podem visualizar as atividades.</p>
 
-                        <form className=" gap-3 flex flex-col w-full items-center">
+                        <form onSubmit={createActivity} className=" gap-3 flex flex-col w-full items-center">
                             <div className=" bg-zinc-950 h-16 p-4 shadow-shape flex text-left w-full rounded-md items-center gap-2">
                                 <Tag className="size-5 text-zinc-400" />
                                 <input
-                                    name="Activity"
+                                    name="ActivityName"
+                                    onChange={(event) => setActivityName(event.target.value)}
                                     type="text"
                                     className="placeholder:text-zinc-400 w-full text-zinc-50 outline-none bg-transparent"
                                     placeholder="Qual a atividade?" />
@@ -91,7 +121,8 @@ export function TripDetails() {
                             <div className=" bg-zinc-950 h-16 p-4 shadow-shape flex text-left w-full rounded-md items-center gap-2">
                                 <Calendar className="size-5 text-zinc-400" />
                                 <input
-                                    name="fullName"
+                                    name="accurs_at"
+                                    onChange={(event) => setOccurtsAt(event.target.value)}
                                     type="datetime-local"
                                     className=" placeholder:text-zinc-400 w-full text-zinc-50 outline-none bg-transparent"
                                     placeholder="Seu e-mail pessoal" />
@@ -111,11 +142,14 @@ export function TripDetails() {
                     <span className="text-zinc-100">{trip?.destination}</span>
                 </div>
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 ">
+                    <div
+                        className="flex items-center gap-2 ">
                         <Calendar className="size-5 text-zinc-400" />
                         <span>{displayDate}</span>
                     </div>
-                    <button className="bg-zinc-800 px-5 py-2 flex items-center gap-2 rounded-md shadow-shape">Alterar local/hora
+                    <button
+                        className="bg-zinc-800 px-5 py-2 flex items-center gap-2 rounded-md shadow-shape">
+                        Alterar local/hora
                         <Settings2 className="text-zinc-400" /></button>
                 </div>
             </div>
@@ -132,34 +166,39 @@ export function TripDetails() {
 
                     <div className="space-y-8">
 
-                        <div className="space-y-3 ">
-                            <div className="flex text-left items-baseline gap-2">
-                                <h1 className="font-semibold">Dia 17</h1>
-                                <span className="text-xs text-zinc-400">Sábado</span>
-                            </div>
-                            <p className="text-lg text-zinc-400 font-light">Nenhuma atividade registrada para hoje.</p>
-                        </div>
-
-                        <div className="space-y-3 ">
-                            <div className="flex text-left items-baseline gap-2">
-                                <h1 className="font-semibold">Dia 18</h1>
-                                <span className="text-xs text-zinc-400">Domingo</span>
-                            </div>
-                            <div className="bg-zinc-900 h-12 flex items-center px-4 rounded-lg shadow-shape">
-                                <div className="flex items-center gap-4">
-                                    <CircleCheck className="text-blueisa size-5" />
-                                    <p className="text-lg text-zinc-400 font-light">Corrida de Kart</p>
+                        {activities.map(activity =>
+                            <div key={activity.date} className="space-y-3 ">
+                                <div className="flex text-left items-baseline gap-2">
+                                    <h1 className="font-semibold">
+                                        Dia {format(activity.date, "d")}
+                                    </h1>
+                                    <span
+                                        className="text-xs text-zinc-400">
+                                        {format(activity.date, "EEEE", { locale: ptBR })}
+                                    </span>
                                 </div>
-                                <span className="ml-auto font-light text-zinc-400">8:00h</span>
+                                {activity.activities.length > 0 ?
+                                    activity.activities.map(todo =>
+                                        <div key={todo.id}
+                                            className="bg-zinc-900 h-12 flex items-center px-4 rounded-lg shadow-shape">
+                                            <div className="flex items-center gap-4">
+                                                <CircleCheck className="text-blueisa size-5" />
+                                                <p className="text-lg text-zinc-400 font-light">{todo.title}</p>
+                                            </div>
+                                            <span
+                                                className="ml-auto font-light text-zinc-400">
+                                                {format(todo.occurs_at, "HH:mm 'h'", { locale: ptBR })}
+                                            </span>
+                                        </div>
+                                    )
+                                    :
+                                    <p
+                                        className="text-lg text-zinc-400 font-light">
+                                        Nenhuma atividade registrada para este dia.
+                                    </p>
+                                }
                             </div>
-                            <div className="bg-zinc-900 h-12 flex items-center px-4 rounded-lg shadow-shape">
-                                <div className="flex items-center gap-4">
-                                    <CircleCheck className="text-blueisa size-5" />
-                                    <p className="text-lg text-zinc-400 font-light">Corrida de Kart</p>
-                                </div>
-                                <span className="ml-auto font-light text-zinc-400">8:00h</span>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </div>
 
@@ -167,7 +206,7 @@ export function TripDetails() {
                     <div className="space-y-4">
                         <h1 className="font-bold text-2xl">Links importantes</h1>
                         <div className="space-y-4">
-                            {links.length > 0? links.map(link =>
+                            {links.length > 0 ? links.map(link =>
                                 <div key={link.id} className=" flex justify-between items-center">
                                     <div className=" flex items-start flex-col">
                                         <span className=" text-left text-zinc-100">{link.title}</span>
@@ -177,8 +216,8 @@ export function TripDetails() {
                                         <a href={link.url}><Link2 className="size-5 shrink-0" /></a>
                                     </div>
                                 </div>
-                            ): 
-                            <span>Sem Links cadastrados</span>
+                            ) :
+                                <span>Sem Links cadastrados</span>
                             }
                             {linkModal && (
                                 <div className="fixed bg-black/60 inset-0 flex items-center justify-center">
@@ -244,9 +283,11 @@ export function TripDetails() {
                                 </div>
                             )}
                         </div>
-                        <button className="w-full hover:bg-zinc-700 h-11 bg-zinc-800 gap-2 shadow-shape rounded-md flex items-center justify-center text-zinc-100 px-5 py-2">
+                        <button
+                            className="w-full hover:bg-zinc-700 h-11 bg-zinc-800 gap-2 shadow-shape rounded-md flex items-center justify-center text-zinc-100 px-5 py-2">
                             <UserCog className="size-5 text-zinc-100" />
-                            Gerenciar convidados</button>
+                            Gerenciar convidados
+                        </button>
                     </div>
                 </div>
             </main >

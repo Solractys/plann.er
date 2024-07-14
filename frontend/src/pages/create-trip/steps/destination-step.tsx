@@ -24,8 +24,8 @@ export function DestinationStep({
     
 }: DestinationStepProps) {
     const [DatePickerOpen, setDatePickerOpen] = useState(false);
-    const displayDate = EventDate && EventDate.from && EventDate.to ? format(EventDate.from, "d' de 'LLL")
-    .concat(" até ").concat(format(EventDate.to, "d' de 'LLL",)): undefined;
+    const displayDate = EventDate && EventDate.from && EventDate.to ? format(EventDate.from, "d' de 'LLL", {locale: ptBR})
+    .concat(" até ").concat(format(EventDate.to, "d' de 'LLL", {locale: ptBR})): undefined;
     
     function OpenDatePicker() {
         setDatePickerOpen(true)
