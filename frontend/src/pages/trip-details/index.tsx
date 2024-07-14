@@ -1,6 +1,6 @@
 import { Calendar, CircleCheck, CircleDashed, Link2, MapPin, Plus, Settings2, Tag, UserCog, X } from "lucide-react"
 import { useEffect, useState } from "react"
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { api } from "../../lib/axios";
 import { format } from "date-fns";
 
@@ -11,17 +11,26 @@ interface Trip {
     ends_at: string
     is_confirmed: boolean
 }
+interface Participant {
+    id: string
+    name: string | null
+    email: string
+    is_confirmed: boolean
+}
 
 export function TripDetails() {
     const path = useLocation()
     const [trip, setTrip] = useState<Trip | undefined>();
+    const [participants, setParticipants] = useState<Participant[]>([])
 
     useEffect(() => {
-     api.get(path.pathname).then(response => setTrip(response.data.trip));
-}, [])
+        api.get(path.pathname).then(response => setTrip(response.data.trip));
+        api.get(path.pathname + "/participants").then(response => setParticipants(response.data.participants));
+    }, [])
 
-    const displayDate = trip? format(trip?.starts_at, "d' de 'LLL")
-    .concat(" até ").concat(format(trip?.ends_at, "d' de 'LLL")): null;
+    const displayDate = trip ? format(trip?.starts_at, "d' de 'LLL")
+        .concat(" até ").concat(format(trip?.ends_at, "d' de 'LLL")) : null;
+
     const [isOpenModalActiv, setIsOpenModalActiv] = useState(false);
     function OpenModalActiv() {
         setIsOpenModalActiv(true);
@@ -158,31 +167,27 @@ export function TripDetails() {
                         <h1 className="text-zinc-100 font-bold text-2xl text-left">Convidados</h1>
 
                         <div className="space-y-8">
-                            <div className=" flex justify-between items-center">
-                                <div className=" flex items-start flex-col">
-                                    <span className=" text-left text-zinc-100">Jessica White</span>
-                                    <span className="text-zinc-400 w-full truncate">jessica.white44@yahoo.com</span>
+                            {participants.map((participant, index) =>
+                                <div key={participant.id} className=" flex justify-between items-center" >
+                                    <div className=" flex items-start flex-col">
+                                        <span className=" text-left text-zinc-100">Convidado(a) {index}</span>
+                                        <span className="text-zinc-400 w-full truncate">{participant.email}</span>
+                                    </div>
+                                    <div>
+                                        {participant.is_confirmed ?
+                                            (<CircleCheck className="text-blueisa size-5 shrink-0" />) :
+                                            <CircleDashed className="text-zinc-400 size-5 shrink-0" />
+                                        }
+                                    </div>
                                 </div>
-                                <div >
-                                    <CircleCheck className="text-blueisa size-5 shrink-0" />
-                                </div>
-                            </div>
-                            <div className=" flex justify-between items-center">
-                                <div className=" flex items-start flex-col">
-                                    <span className=" text-left text-zinc-100">Dr. Rita Pacocha</span>
-                                    <span className="text-zinc-400 w-full truncate">lacy.stiedemann@gmail.com</span>
-                                </div>
-                                <div >
-                                    <CircleDashed className="text-zinc-400 size-5 shrink-0" />
-                                </div>
-                            </div>
+                            )}
                         </div>
                         <button className="w-full h-11 bg-zinc-800 gap-2 shadow-shape rounded-md flex items-center justify-center text-zinc-100 px-5 py-2">
                             <UserCog className="size-5 text-zinc-100" />
                             Gerenciar convidados</button>
                     </div>
                 </div>
-            </main>
-        </div>
+            </main >
+        </div >
     )
 }
