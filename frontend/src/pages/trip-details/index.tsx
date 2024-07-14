@@ -190,7 +190,7 @@ export function TripDetails() {
                                         <p className="text-sm mb-4 text-zinc-400">Adicione o título e a url do link que deseja compartilhar com os seus convidados</p>
 
                                         <form onSubmit={createLink} className=" gap-3 flex flex-col w-full items-center">
-                                            <div className=" bg-zinc-900 h-16 p-4 shadow-shape flex text-left w-full rounded-md items-center gap-2">
+                                            <div className=" bg-zinc-950 h-16 p-4 shadow-shape flex text-left w-full rounded-md items-center gap-2">
                                                 <TagIcon className="size-5 text-zinc-400" />
                                                 <input
                                                     name="linkName"
@@ -199,7 +199,7 @@ export function TripDetails() {
                                                     className="placeholder:text-zinc-400 w-full text-zinc-50 outline-none bg-transparent"
                                                     placeholder="Titulo do Link" />
                                             </div>
-                                            <div className=" bg-zinc-900 h-16 p-4 shadow-shape flex text-left w-full rounded-md items-center gap-2">
+                                            <div className=" bg-zinc-950 h-16 p-4 shadow-shape flex text-left w-full rounded-md items-center gap-2">
                                                 <Link2Icon className="size-5 text-zinc-400" />
                                                 <input
                                                     name="url"
@@ -210,7 +210,7 @@ export function TripDetails() {
                                             </div>
 
                                             <button
-                                                className="bg-blueisa justify-center w-full py-3 px-5 text-blue-50 font-medium flex items-center rounded-md gap-2 hover:bg-blue-700"
+                                                className="bg-blueisa active:bg-blueisadark justify-center w-full py-3 px-5 text-blue-50 font-medium flex items-center rounded-md gap-2 hover:bg-blue-700"
                                                 type="submit">Criar Link</button>
                                         </form>
                                     </div>
@@ -218,7 +218,7 @@ export function TripDetails() {
                             )}
 
                         </div>
-                        <button onClick={OpenLinkModal} className="w-full h-11 bg-zinc-800 gap-2 shadow-shape rounded-md flex items-center justify-center text-zinc-100 px-5 py-2">
+                        <button onClick={OpenLinkModal} className="w-full h-11 hover:bg-zinc-700 bg-zinc-800 gap-2 shadow-shape rounded-md flex items-center justify-center text-zinc-100 px-5 py-2">
                             <Plus className="size-5 text-zinc-100" />
                             Cadastrar novo link</button>
                     </div>
@@ -244,7 +244,7 @@ export function TripDetails() {
                                 </div>
                             )}
                         </div>
-                        <button className="w-full h-11 bg-zinc-800 gap-2 shadow-shape rounded-md flex items-center justify-center text-zinc-100 px-5 py-2">
+                        <button className="w-full hover:bg-zinc-700 h-11 bg-zinc-800 gap-2 shadow-shape rounded-md flex items-center justify-center text-zinc-100 px-5 py-2">
                             <UserCog className="size-5 text-zinc-100" />
                             Gerenciar convidados</button>
                     </div>

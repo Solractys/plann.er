@@ -1,17 +1,25 @@
+import { format } from "date-fns";
 import { Mail, User, X } from "lucide-react";
 import { FormEvent } from "react";
+import { DateRange } from "react-day-picker";
 interface ConfirmTripModalProps {
     CloseConfirmModal: () => void
     setOwnerName: (name: string) => void
     setEmailOwner: (email: string) => void
     createTrip: (event: FormEvent<HTMLFormElement>) => void
+    destination: string
+    eventDate: DateRange | undefined
 }
 export function ConfirmTripModal({
     CloseConfirmModal,
     createTrip,
     setEmailOwner,
-    setOwnerName
+    setOwnerName,
+    destination,
+    eventDate
 }: ConfirmTripModalProps) {
+    const displayDate = eventDate && eventDate.from && eventDate.to ? format(eventDate.from, "d' de 'LLL")
+    .concat(" até ").concat(format(eventDate.to, "d' de 'LLL",)): undefined;
     return (
         <div className="fixed bg-black/60 inset-0 flex items-center justify-center">
             <div className="max-w-[560px] space-y-4 bg-zinc-900 py-5 px-6 rounded-md">
@@ -19,8 +27,11 @@ export function ConfirmTripModal({
                     <h1 className="text-2xl text-white">Confirmar criação de viagem</h1>
                     <button className="" onClick={CloseConfirmModal}><X className="text-zinc-400" /></button>
                 </div>
-                <p className="text-sm mb-4 text-zinc-400">Para concluir a criação da viagem para <span className=" font-semibold text-zinc-50">Florianópolis, Brasil
-                </span> nas datas de <span className="font-semibold text-zinc-50">16 a 27 de Agosto de 2024</span> preencha seus dados abaixo:</p>
+                <p className="text-sm mb-4 text-zinc-400">Para concluir a criação da viagem para 
+                    <span className=" font-semibold text-zinc-50"> {destination}
+                </span> nas datas de 
+                <span className="font-semibold text-zinc-50"> {displayDate} </span>.
+                 Preencha seus dados abaixo:</p>
 
                 <form onSubmit={createTrip} className=" gap-3 flex flex-col w-full items-center">
                     <div className=" bg-zinc-950 h-16 p-4 shadow-shape flex text-left w-full rounded-md items-center gap-2">
@@ -44,7 +55,7 @@ export function ConfirmTripModal({
 
                     <button
                         className="bg-blueisa justify-center w-full py-3 px-5 text-blue-50 font-medium flex items-center rounded-md gap-2 hover:bg-blue-700"
-                        type="submit">Comfirmar criação da viagem</button>
+                        type="submit">Confirmar criação da viagem</button>
                 </form>
             </div>
         </div>

@@ -7,10 +7,12 @@ export default {
   theme: {
     extend: {
       backgroundColor: {
-        blueisa: '#0000FF'
+        blueisa: '#0000FF',
+        blueisadark: '#05059B',
       },
       textColor: {
-        blueisa: '#0000FF'
+        blueisa: '#0000FF',
+        blueisadark: '#05059B',
       },
       fontFamily: {
         sans: 'Inter',

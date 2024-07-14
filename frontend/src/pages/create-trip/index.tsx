@@ -8,6 +8,7 @@ import { InviteGuestStep } from "./steps/invite-guest-step";
 import { DateRange } from "react-day-picker";
 import { api } from "../../lib/axios";
 import { X } from "lucide-react";
+import { ScaleLoader } from "react-spinners";
 
 export function CreateTrip() {
 
@@ -16,13 +17,14 @@ export function CreateTrip() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [emails, setEmails] = useState<string[]>([]);
     const [confirmModal, setConfirmModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [ModalError, setModalError] = useState(false);
 
     const [Destination, setDestination] = useState('');
     const [OwnerName, setOwnerName] = useState('');
     const [EmailOwner, setEmailOwner] = useState('');
     const [EventDate, setEventDate] = useState<DateRange | undefined>();
 
-    const [ModalError, setModalError] = useState(false);
     function openModalError() {
         setModalError(true);
     }
@@ -68,6 +70,8 @@ export function CreateTrip() {
     }
     async function createTrip(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        setIsLoading(true);
+
         if (!Destination) {
             openModalError();
             return
@@ -91,6 +95,7 @@ export function CreateTrip() {
             owner_email: EmailOwner
         })
         const { tripId } = response.data;
+        setConfirmModal(false);
         return navigate(`/trips/${tripId}`);
     }
     return (
@@ -101,6 +106,13 @@ export function CreateTrip() {
                         <img src="logo.svg" alt="plann.er" className="w-44" />
                         <p className="text-zinc-300 text-lg">Convide seus amigos e planeje sua próxima viagem!</p>
                     </div>
+                    {isLoading && (
+                        <div className="z-10 fixed bg-black/60 inset-0 flex items-center justify-center">
+                            <div>
+                                <ScaleLoader color="#0000FF" radius={50} height={50} width={7} />
+                            </div>
+                        </div>
+                    )}
 
                     <DestinationStep
                         isOpenGuest={isOpenGuest}
@@ -138,6 +150,8 @@ export function CreateTrip() {
                     createTrip={createTrip}
                     setEmailOwner={setEmailOwner}
                     setOwnerName={setOwnerName}
+                    destination={Destination}
+                    eventDate={EventDate}
                 />
             )}
             {ModalError && (

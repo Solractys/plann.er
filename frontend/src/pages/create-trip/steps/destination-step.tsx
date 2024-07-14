@@ -64,7 +64,7 @@ export function DestinationStep({
                     <div className=" space-y-4 bg-zinc-900 py-5 px-6 rounded-md">
                         <div className="flex justify-between items-center">
                             <h1 className="text-2xl text-white">Selecione a data</h1>
-                            <button className="" onClick={closeDatePicker}><X className="text-zinc-400" /></button>
+                            <button className="bg-blueisa hover:bg-blue-700 active:bg-blueisadark py-1 px-4 text-zinc-50 font-semibold rounded-md shadow-shape" onClick={closeDatePicker}>Enviar</button>
                         </div>
                         <DayPicker locale={ptBR} 
                         classNames={defaultStyles} 
